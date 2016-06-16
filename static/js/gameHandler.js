@@ -1,11 +1,12 @@
+    var windowWidth = window.innerWidth,
+        windowHeight = window.innerHeight;
 window.onload = function() {
     //Screen adjustment
     const ULTIMATE_WIDTH=1280;
     const ULTIMATE_HEIGHT=720;
     //I will use this too value as anchor for every other objects in the game
     var scaleRatio =  window.devicePixelRatio / 3; //set the DPR
-    var windowWidth = window.innerWidth,
-        windowHeight = window.innerHeight;
+
     var aspectRatioDevice =  windowWidth/windowHeight;
     var aspectRatioSafeZone = ULTIMATE_WIDTH / ULTIMATE_HEIGHT;
     var extraWidth = 0, extraHeight = 0;
@@ -23,16 +24,23 @@ window.onload = function() {
     console.log("Width of world is: " + windowWidth + " Height of world is: " + windowHeight );
     console.log("Width Ratio is: " + widthRatio +"Height Ratio is: " + heightRatio);
 
+    // global variables stored here
+    game.global = {
+        // for scaling every objects in the game
+        widthRatio : widthRatio, 
+        heightRatio : heightRatio
+    };
+
     //Game states
-    game.state.add("Boot", boot);
-    game.state.add("Preload", preload);
-    //game.state.add("Menu", menu);
-    game.state.add("Play", play);
+    game.state.add('Boot', Boot);
+    game.state.add('Preload',Preload);
+    //game.state.add(Menu, menu);
+    game.state.add('Play', Play);
 
     //Start the game
     game.state.start("Boot");
 
-    // field.scaleRatio.setTo(scaleRatio, scaleRatio);// set all assets to be according to ratio 
+    // field.a.setTo(scaleRatio, scaleRatio);// set all assets to be according to ratio 
 
 
 };

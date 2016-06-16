@@ -1,8 +1,12 @@
-var boot = function(game){
-	console.log("Currently at boot");
-}
+var Boot = function(game){}
 
-boot.prototype = {
+Boot.prototype = {
+
+	// init: function(w){
+	// 	widthRatio =  w;
+	// 	console.log("init is called");
+	// 	console.log("widthRatio in boot is: " + widthRatio);
+	// },
 	preload: function(){
 		this.game.load.image('loading','static/images/loading.png');
 	},

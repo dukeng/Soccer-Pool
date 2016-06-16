@@ -1,35 +1,34 @@
-var play = function(game){
+var Play = function(game){
 	console.log("Currently at play");
-	widthRatio = 0.77;
-	heightRatio = 0.77;
+    var players;
+    var ball;
+    //shortcuts for the constant 
+    widthRatio = game.global.widthRatio;
+    heightRatio = game.global.heightRatio;
 }
-var players;
-var ball;
 
-play.prototype = {
+
+Play.prototype = {
 
 	create: function () {
-		console.log("create in play is being called");
 		var field = this.game.add.sprite(0, 0, 'field');
 		field.width = this.game.world.width;
 		field.height = this.game.world.height;
+        console.log("width is" + this.game.world.width);
         players = this.game.add.group(); // this initialize a players group with missing params
-        console.log("width ratio inside play is:" + widthRatio);
-        console.log("word width inside play is:" + this.game.world.width);
-
         for (var i = 0; i < 11; i++) {
-        	player = players.create(widthRatio * this.game.world.randomX, heightRatio * this.game.world.randomY, 'player1');
+        	player = players.create(widthRatio * 30 * i, heightRatio * 30 * i, 'player1');
         	var scaleX = (widthRatio)*0.25;
         	var scaleY = (heightRatio)*0.25;
         	player.scale.setTo(scaleX,scaleY);
         };
         for (var i = 0; i < 11; i++) {
-        	player = players.create(widthRatio * this.game.world.randomX, heightRatio * this.game.world.randomY, 'player2');
+        	player = players.create(widthRatio * 40 * i + 100, heightRatio * 40 * i + 25, 'player2');
         	var scaleX = (widthRatio)*0.25;
         	var scaleY = (heightRatio)*0.25;
         	player.scale.setTo(scaleX,scaleY);
         };
-        ball = game.world.create(widthRatio * this.game.world.randomX, heightRatio * this.game.world.randomY, 'ball');
+        ball = this.game.world.create(widthRatio * this.game.world.randomX, heightRatio * this.game.world.randomY, 'ball');
         var scaleX = (widthRatio)*0.25;
         var scaleY = (heightRatio)*0.25;
         ball.scale.setTo(scaleX,scaleY);
