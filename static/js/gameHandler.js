@@ -2,13 +2,13 @@
         windowHeight = window.innerHeight;
 window.onload = function() {
     //Screen adjustment
-    const ULTIMATE_WIDTH=1280;
-    const ULTIMATE_HEIGHT=720;
+    const DESIRED_WIDTH=1280;
+    const DESIRED_HEIGHT=920; //we add additional 200 to make space for the button
     //I will use this too value as anchor for every other objects in the game
     var scaleRatio =  window.devicePixelRatio / 3; //set the DPR
 
     var aspectRatioDevice =  windowWidth/windowHeight;
-    var aspectRatioSafeZone = ULTIMATE_WIDTH / ULTIMATE_HEIGHT;
+    var aspectRatioSafeZone = DESIRED_WIDTH / DESIRED_HEIGHT;
     var extraWidth = 0, extraHeight = 0;
     if (aspectRatioSafeZone < aspectRatioDevice) {
         // have to add game pixels vertically in order to fill the device screen
@@ -17,7 +17,7 @@ window.onload = function() {
         // have to add game pixels horizontally
         windowHeight = 1/ aspectRatioSafeZone * windowWidth;
     }
-    var widthRatio = windowWidth/ ULTIMATE_WIDTH, heightRatio = windowHeight / ULTIMATE_HEIGHT; // really important value
+    var widthRatio = windowWidth/ DESIRED_WIDTH, heightRatio = windowHeight / DESIRED_HEIGHT; // really important value
     
     var game = new Phaser.Game(windowWidth, windowHeight, Phaser.AUTO, '', "game");
     // console.log("width of window is: " + window.innerWidth + "window height is: " + window.innerHeight +  "device pixel ratio is: " + devicePixelRatio);
@@ -27,8 +27,8 @@ window.onload = function() {
     // global variables stored here
     game.global = {
         // for scaling every objects in the game
-        widthRatio : widthRatio, 
-        heightRatio : heightRatio
+        ratio:  (windowWidth)/ (windowHeight * (720 / 920)),
+        objectRatio : widthRatio
     };
 
     //Game states
