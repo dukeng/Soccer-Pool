@@ -10,6 +10,7 @@ Preload.prototype = {
         this.game.load.image('player1', 'static/images/player1.png');
         this.game.load.image('player2', 'static/images/player2.png');
         this.game.load.image('ball', 'static/images/ball.png');
+        this.game.load.image('arrow', 'static/images/arrow.png');
 	},
 	create: function(){
 		this.game.state.start("Play");
