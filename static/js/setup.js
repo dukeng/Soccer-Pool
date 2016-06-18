@@ -1,12 +1,56 @@
 /* This file contains method helpers and settings for play.js */
 
-
 //setup border field
-function setBorderPosition(border, width, height){
-	border.create(0,0, 0, height,'blank'); // left blank
-	border.create(0,0, width, 0,'blank'); // top blank
-	border.create(width,0, width, height,'blank'); // right blank
-	border.create(0,height, width, height,'blank'); // bottom blank
+function setBorderPosition(border, goal, game, upperSpace ){
+	//here are some hardcoded constants
+	marginX = 28 * objectRatio;
+	marginY = 40 * objectRatio;
+	innerWidth = 885 * objectRatio;
+	innerHeight = 420 * objectRatio;
+	goalLength = 98 * objectRatio;
+	offsetToGoal = 160 * objectRatio; // the height from top of the field to the goal
+
+	// 6 borders
+	var leftTopBlank = game.add.sprite(0, marginY + upperSpace, 'blank');
+	leftTopBlank.height = (innerHeight - goalLength)/2;
+	leftTopBlank.x = marginX - leftTopBlank.width * objectRatio ;
+
+	var leftBottomBlank = game.add.sprite(0,marginY + upperSpace + leftTopBlank.height + goalLength, 'blank');
+	leftBottomBlank.height =(innerHeight - goalLength)/2;
+	leftBottomBlank.x = marginX - leftBottomBlank.width * objectRatio;
+
+	var topBlank = game.add.sprite(marginX, marginY + upperSpace,'blank');
+	topBlank.y -= topBlank.height;
+	topBlank.width = innerWidth;
+
+	var rightTopBlank = game.add.sprite(innerWidth + marginX,marginY + upperSpace,'blank');
+	rightTopBlank.height = (innerHeight - goalLength)/2;
+
+	var rightBottomBlank = game.add.sprite(innerWidth + marginX, marginY + upperSpace + leftTopBlank.height + goalLength, 'blank');
+	rightBottomBlank.height = (innerHeight - goalLength) /2;
+
+
+	var bottomBlank = game.add.sprite(marginX,innerHeight +marginY+ upperSpace,'blank');
+	bottomBlank.width = innerWidth;
+
+	border.add(leftTopBlank);
+	border.add(rightTopBlank);
+	border.add(leftBottomBlank);
+	border.add(rightBottomBlank);
+	border.add(topBlank);
+	border.add(bottomBlank);
+
+	//Goal
+	var leftGoal = game.add.sprite(0, marginY + upperSpace, 'goal');
+	leftGoal.x = marginX - leftGoal.width * objectRatio;
+	leftGoal.y += offsetToGoal;
+	leftGoal.height = goalLength;
+	var rightGoal = game.add.sprite(innerWidth + marginX, marginY + upperSpace, 'goal');
+	rightGoal.y += offsetToGoal; 
+	rightGoal.height = goalLength;
+	goal.add(leftGoal);
+	goal.add(rightGoal);
+
 }
 
 // setup for team's position

@@ -7,6 +7,7 @@ Boot.prototype = {
 		this.game.load.image('loading','static/images/loading.png');
 	},
 	create: function(){
+		
 		this.game.state.start("Preload");
 	}
 };

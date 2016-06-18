@@ -7,16 +7,23 @@ var Play = function(game){
     //REM: these params are recognized outside the scope of the prototype and the play.js
     //need to include this in sprite's position to scale properly
     objectRatio = game.global.objectRatio;
-    scale = objectRatio * 0.17;
+    scale = objectRatio * 0.2;
     var input; // get input keyboard
-
     var borders; //borders position
-
+    var goals; // goal positions
     var text;
+
+
 }
 
+var reset = true;
 var strength  = 0; //strength of the shoot
 var newScaleX = 0;
+
+var score1 = 0; // players 1 score (default score right)
+var score2 = 0; // players 2 score (default score left)
+
+
 Play.prototype = {
 
 	create: function () {
@@ -37,17 +44,28 @@ Play.prototype = {
         //     field.height = field.width * 1/ this.game.global.ratio;
         // }
 
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        // this.game.physics.p2.setImpactEvents(true);
+
         // border field for collision
         borders = this.game.add.group();
-        setBorderPosition(borders);
+        goals = this.game.add.group();
 
-        //init a players group with missing params
+        setBorderPosition(borders,goals, this.game, this.game.global.upperSpace);
+        this.game.physics.enable(borders, Phaser.Physics.ARCADE);
+        this.game.physics.enable(goals, Phaser.Physics.ARCADE);
+        borders.forEach(function(item) {
+            item.body.immovable = true;
+        }, this);
+        goals.forEach(function(item) {
+            item.body.immovable = true;
+        }, this);
+        //Players
         players1 = this.game.add.group(); 
         players2 = this.game.add.group();
         //set positions of players
         setPlayerPositions(players1, players2, this.game.global.upperSpace);
-
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        
         //enable physics on players
         this.game.physics.enable(players1, Phaser.Physics.ARCADE);
         this.game.physics.enable(players2, Phaser.Physics.ARCADE);
@@ -82,8 +100,9 @@ Play.prototype = {
         //this makes the game excluded from input of the browser
         this.game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
 
+
         //all kinds of text
-        text = this.game.add.text(this.game.world.width /2,  40 * objectRatio  , "Score ", {
+        text = this.game.add.text(this.game.world.width /2,  40 * objectRatio  ,score1 +  " : " + score2, {
             font: "30px Arial",
             fill: "#ff0044",
             align: "center"
@@ -107,15 +126,35 @@ Play.prototype = {
         arrow.scale.setTo(scale, scale * 1.5);
     },
 
-    checkGoal: function(){
+    goal1: function(){
+        if(reset){
+            score2++;
+            console.log(score1);
+            reset = false;
+            text.setText(score1 + " : " + score2);
+        }
+        
+    },
 
+    goal2: function(){
+        if(reset){
+            score1++;
+            console.log(score2);
+            reset = false;
+            text.setText(score1 + " : " + score2);
+        }
     },
 
     update: function () {
         //check collision
         this.game.physics.arcade.collide(ball, players1);
         this.game.physics.arcade.collide(ball, players2); 
-        this.game.physics.arcade.collide(ball, borders); 
+        this.game.physics.arcade.collide(ball, borders);
+
+        this.game.physics.arcade.overlap(ball, goals.getAt(0),this.goal1);
+        this.game.physics.arcade.overlap(ball, goals.getAt(1),this.goal2);
+      
+
         arrow.x = ball.x;
         arrow.y = ball.y;
         arrow.angle = ball.angle;
@@ -145,6 +184,7 @@ Play.prototype = {
 
     render: function(){
         // this.game.debug.spriteInfo(ball, 32, 32);
-    }
+    },
+
 
 }
