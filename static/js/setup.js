@@ -1,4 +1,4 @@
-/* This file contains method helpers and settings for play.js */
+/* This file contains helper methods and settings for play.js */
 
 //setup border field
 function setBorderPosition(border, goal, game, upperSpace ){
@@ -56,16 +56,19 @@ function setBorderPosition(border, goal, game, upperSpace ){
 // setup for team's position
 function setPlayerPositions(players1, players2, upperSpace){
 	players1.create(50*objectRatio, 250*objectRatio, 'player1'); // goal keeper
-	defenderX = 250;
-	players1.create(defenderX*objectRatio, 100*objectRatio, 'player1');
-	players1.create(defenderX*objectRatio, 250*objectRatio, 'player1');
-	players1.create(defenderX*objectRatio, 300*objectRatio, 'player1');
-	players1.create(defenderX*objectRatio, 350*objectRatio, 'player1');
-	middlefieldX = 650;
+	defenderX = 225;
+	players1.create(defenderX*objectRatio, 175*objectRatio, 'player1');
+	players1.create(defenderX*objectRatio, 325*objectRatio, 'player1');
 
-	attackX = 700;
-	players1.create(attackX*objectRatio, 150*objectRatio, 'player1');
-	players1.create(attackX*objectRatio, 300*objectRatio, 'player1');
+	middlefieldX = 400;
+	players1.create(middlefieldX*objectRatio, 150*objectRatio, 'player1');
+	players1.create(middlefieldX*objectRatio, 350*objectRatio, 'player1');
+	middField2X = 550;
+	players1.create(middField2X*objectRatio, 170*objectRatio, 'player1');
+	players1.create(middField2X*objectRatio, 330*objectRatio, 'player1');
+	attackX = 700; 
+	players1.create(attackX*objectRatio, 175*objectRatio, 'player1');
+	players1.create(attackX*objectRatio, 325*objectRatio, 'player1');
 	players1.forEach(function(item) {
 		item.scale.setTo(scale);
 		item.anchor.setTo(0.5,0.5);
@@ -76,11 +79,11 @@ function setPlayerPositions(players1, players2, upperSpace){
 	defX = 700;
 	players2.create(defX*objectRatio, 250*objectRatio, 'player2');
 
-	midX = 550;
+	midX = 500;
 	players2.create(midX*objectRatio, 150*objectRatio, 'player2');
 	players2.create(midX*objectRatio, 250*objectRatio, 'player2');
 	players2.create(midX*objectRatio, 350*objectRatio, 'player2');
-	attX = 400;
+	attX = 300;
 	players2.create(attX*objectRatio, 100*objectRatio, 'player2');
 	players2.create(attX*objectRatio, 200*objectRatio, 'player2');
 	players2.create(attX*objectRatio, 300*objectRatio, 'player2');
@@ -91,4 +94,8 @@ function setPlayerPositions(players1, players2, upperSpace){
 		item.y = item.y + upperSpace;
 	}, this);
 }
+
+// function moveToPosition(object,x,y,angle,time){
+
+// }
 

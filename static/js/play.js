@@ -11,8 +11,9 @@ var Play = function(game){
     var input; // get input keyboard
     var borders; //borders position
     var goals; // goal positions
-    var text;
-
+    //all kinds of text
+    var scoreInfo;
+    var turn;
 
 }
 
@@ -75,17 +76,14 @@ Play.prototype = {
         // pass in a function to get run
         players1.forEach(function(item) {
             item.body.immovable = true;
-            // item.body.setCircle(item.width/2);
-            // console.log("item width is "+ item.width);
         }, this);
         players2.forEach(function(item) {
             item.body.immovable = true;
-            // item.body.setCircle(item.width/2);
         }, this);
 
         //init ball
         ball = this.game.world.create(objectRatio * 475 , objectRatio * 250 + this.game.global.upperSpace, 'ball');
-        ball.scale.setTo(scale);
+        ball.scale.setTo(scale * 0.8);
         ball.anchor.setTo(0.5, 0.5);
         //enable physics mode on ball
         this.game.physics.enable(ball, Phaser.Physics.ARCADE);
@@ -103,18 +101,21 @@ Play.prototype = {
         //this makes the game excluded from input of the browser
         this.game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
 
-
-        //all kinds of text
-        text = this.game.add.text(this.game.world.width /2,  40 * objectRatio  ,score1 +  " : " + score2, {
+        //all kinds of scoreInfo
+        scoreInfo = this.game.add.text(this.game.world.width /2,  40 * objectRatio  ,score1 +  " : " + score2, {
             font: "30px Arial",
             fill: "#ff0044",
             align: "center"
         });
-        text.anchor.setTo(0.5,0.5);
-        text.scale.setTo(scale * 7);
+        scoreInfo.anchor.setTo(0.5,0.5);
+        scoreInfo.scale.setTo(scale * 7);
+        turn = this.game.add.text(this.game.world.width/2, 600 * objectRatio, "", {
+            font: "30px Arial",
+            fill: "#ff0044"
+            
+        });
     },
 
-    
     prepare: function(){
         if(strength <= 1000){
             strength = strength + 20;
@@ -129,32 +130,47 @@ Play.prototype = {
         arrow.scale.setTo(scale, scale * 1.5);
     },
 
-
     goal1: function(){
         if(reset){
             score2++;
             reset = false;
-            text.setText(score1 + " : " + score2);
+            scoreInfo.setText(score1 + " : " + score2);
         }
     },
-
 
     goal2: function(){
         if(reset){
             score1++;
             reset = false;
-            text.setText(score1 + " : " + score2);
+            scoreInfo.setText(score1 + " : " + score2);
         }
     },
 
     resetGoal: function(){
-        
-        this.resetPosition();
-    },
-
-    resetPosition: function(){
         ball.x = 475 * objectRatio;
         ball.y = 250 * objectRatio + this.game.global.upperSpace;
+        ball.body.velocity.setTo(0);
+    },
+
+    chooseBall: function(){ // ball belongs to whom
+        var minDistancefrom1 = Number.MAX_VALUE;
+        var index1 = 0;
+        for (var i = 0; i < players1.children.length; i++) {
+            if(minDistancefrom1 > this.game.physics.arcade.distanceBetween(ball, players1.children[i])){
+                minDistancefrom1 = this.game.physics.arcade.distanceBetween(ball, players1.children[i]);
+                index1 = i;
+            }
+        };
+        var minDistancefrom2 = Number.MAX_VALUE;
+        var index2 = 0;
+        for (var i = 0; i < players1.children.length; i++) {
+            if(minDistancefrom2 > this.game.physics.arcade.distanceBetween(ball, players2.children[i])){
+                minDistancefrom2 = this.game.physics.arcade.distanceBetween(ball, players2.children[i]);
+                index2 = i;
+            }
+        };
+        if(minDistancefrom2 > minDistancefrom1) turn.setText("Ball belongs to team 1");
+        else turn.setText("Ball belongs to team 2");
     },
 
     update: function () {
@@ -167,50 +183,54 @@ Play.prototype = {
             if(setReset == false){ // set the timer
                 elapsedTime = this.game.time.now;
                 setReset = true;
+                arrow.visible = false;
             }
-            
         };
         if(this.game.physics.arcade.overlap(ball, goals.getAt(1),this.goal2) == true){
             if(setReset == false){ // set the timer
                 elapsedTime = this.game.time.now;
                 setReset = true;
+                arrow.visible = false;
             }
-
         };
-        //reset the ball
+
+        //reset the field after goal
         if(setReset){
             if((this.game.time.now - elapsedTime) > 3800){ // check the timer
                 reset = true;
-                this.resetGoal();
                 setReset = false;
+                arrow.visible = true;
+                this.resetGoal();
+
             }
         }
         
         arrow.x = ball.x;
         arrow.y = ball.y;
         arrow.angle = ball.angle;
+
         //input
-        if(ball.body.speed <= 0){
-            arrow.visible = true;
-            if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-                this.prepare();
-            } else{
-                if(strength > 0 ){ // if user intentionally wants to shoot
-                    this.shoot();
+        if(!setReset){
+            if(ball.body.speed == 0){
+                this.chooseBall();
+                arrow.visible = true;
+                if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) this.prepare();  
+                else{// if user intentionally wants to shoot
+                    if(strength > 0 ) this.shoot();
                 }
+                if (input.left.isDown){
+                    ball.body.angularVelocity = -150;
+                }
+                else if (input.right.isDown){
+                    ball.body.angularVelocity = 150;
+                }else{
+                    ball.body.angularVelocity = 0;
+                }
+            }else{
+                arrow.visible = false;
             }
-            if (input.left.isDown){
-                ball.body.angularVelocity = -150;
-            }
-            else if (input.right.isDown){
-                ball.body.angularVelocity = 150;
-            }
-            else{
-                ball.body.angularVelocity = 0;
-            }
-        }else{
-            arrow.visible = false;
         }
+
     },
 
     render: function(){
