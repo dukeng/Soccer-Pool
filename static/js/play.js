@@ -148,8 +148,13 @@ Play.prototype = {
     },
 
     resetGoal: function(){
+        
+        this.resetPosition();
+    },
+
+    resetPosition: function(){
         ball.x = 475 * objectRatio;
-        ball.y = 250 * objectRatio + this.game.global.upperSpace ;
+        ball.y = 250 * objectRatio + this.game.global.upperSpace;
     },
 
     update: function () {
@@ -179,7 +184,6 @@ Play.prototype = {
                 this.resetGoal();
                 setReset = false;
             }
-
         }
         
         arrow.x = ball.x;
