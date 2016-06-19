@@ -17,11 +17,14 @@ var Play = function(game){
 }
 
 var reset = true;
+var setReset = false; // false before timer has been set
+
 var strength  = 0; //strength of the shoot
 var newScaleX = 0;
 
 var score1 = 0; // players 1 score (default score right)
 var score2 = 0; // players 2 score (default score left)
+var elapsedTime;
 
 
 Play.prototype = {
@@ -126,23 +129,27 @@ Play.prototype = {
         arrow.scale.setTo(scale, scale * 1.5);
     },
 
+
     goal1: function(){
         if(reset){
             score2++;
-            console.log(score1);
             reset = false;
             text.setText(score1 + " : " + score2);
         }
-        
     },
+
 
     goal2: function(){
         if(reset){
             score1++;
-            console.log(score2);
             reset = false;
             text.setText(score1 + " : " + score2);
         }
+    },
+
+    resetGoal: function(){
+        ball.x = 475 * objectRatio;
+        ball.y = 250 * objectRatio + this.game.global.upperSpace ;
     },
 
     update: function () {
@@ -151,10 +158,30 @@ Play.prototype = {
         this.game.physics.arcade.collide(ball, players2); 
         this.game.physics.arcade.collide(ball, borders);
 
-        this.game.physics.arcade.overlap(ball, goals.getAt(0),this.goal1);
-        this.game.physics.arcade.overlap(ball, goals.getAt(1),this.goal2);
-      
+        if(this.game.physics.arcade.overlap(ball, goals.getAt(0),this.goal1) == true){
+            if(setReset == false){ // set the timer
+                elapsedTime = this.game.time.now;
+                setReset = true;
+            }
+            
+        };
+        if(this.game.physics.arcade.overlap(ball, goals.getAt(1),this.goal2) == true){
+            if(setReset == false){ // set the timer
+                elapsedTime = this.game.time.now;
+                setReset = true;
+            }
 
+        };
+        //reset the ball
+        if(setReset){
+            if((this.game.time.now - elapsedTime) > 3800){ // check the timer
+                reset = true;
+                this.resetGoal();
+                setReset = false;
+            }
+
+        }
+        
         arrow.x = ball.x;
         arrow.y = ball.y;
         arrow.angle = ball.angle;
