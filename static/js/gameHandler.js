@@ -29,7 +29,7 @@ window.onload = function() {
         // for scaling every objects in the game
         ratio:  (windowWidth)/ (windowHeight * (500 / DESIRED_HEIGHT)), // field width / field height
         objectRatio : widthRatio, // this is the ratio in which objects have to be scaled according to the field
-        upperSpace: 50 // space of the score
+        upperSpace: 50 * widthRatio // space of the score
     };
     console.log("objectRatio and ratio is " + game.global.ratio + " " + game.global.objectRatio);
 

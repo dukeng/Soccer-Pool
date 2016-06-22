@@ -39,30 +39,22 @@ Play.prototype = {
         field.anchor.setTo(0.5,0.5); // set the middle of the field
         field.width = this.game.world.width;
         field.height = field.width / fieldRatio;
-        //configure actual height 
-        // if (fieldRatio < this.game.global.ratio ) {
-        //     field.height = this.game.world.height * (420/580);
-        //     field.width = field.height * this.game.global.ratio;
-        // } else {
-        //     field.width = this.game.world.width;
-        //     field.height = field.width * 1/ this.game.global.ratio;
-        // }
 
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        // this.game.physics.p2.setImpactEvents(true);
-
+        //enable physics
+        this.game.physics.startSystem(Phaser.Physics.P2JS);
+        this.game.physics.p2.restitution = 0.8;
         // border field for collision
         borders = this.game.add.group();
         goals = this.game.add.group();
 
         setBorderPosition(borders,goals, this.game, this.game.global.upperSpace);
-        this.game.physics.enable(borders, Phaser.Physics.ARCADE);
-        this.game.physics.enable(goals, Phaser.Physics.ARCADE);
+        this.game.physics.p2.enable(borders);
+        this.game.physics.p2.enable(goals);
         borders.forEach(function(item) {
-            item.body.immovable = true;
+            item.body.static = true;
         }, this);
         goals.forEach(function(item) {
-            item.body.immovable = true;
+            item.body.static = true;
         }, this);
         //Players
         players1 = this.game.add.group(); 
@@ -71,14 +63,19 @@ Play.prototype = {
         setPlayerPositions(players1, players2, this.game.global.upperSpace);
         
         //enable physics on players
-        this.game.physics.enable(players1, Phaser.Physics.ARCADE);
-        this.game.physics.enable(players2, Phaser.Physics.ARCADE);
-        // pass in a function to get run
+        this.game.physics.p2.enable(players1);
+        this.game.physics.p2.enable(players2);
         players1.forEach(function(item) {
-            item.body.immovable = true;
+            item.body.setZeroDamping();
+            item.body.fixedRotation = true;
+            item.body.setZeroVelocity();
+            item.body.setCircle(item.width/2);
         }, this);
         players2.forEach(function(item) {
-            item.body.immovable = true;
+            item.body.setZeroDamping();
+            item.body.fixedRotation = true;
+            item.body.setZeroVelocity();
+            item.body.setCircle(item.width/2);
         }, this);
 
         //init ball
@@ -86,10 +83,11 @@ Play.prototype = {
         ball.scale.setTo(scale * 0.8);
         ball.anchor.setTo(0.5, 0.5);
         //enable physics mode on ball
-        this.game.physics.enable(ball, Phaser.Physics.ARCADE);
-        ball.body.drag.set(200);
+        this.game.physics.p2.enable(ball);
+        ball.body.setZeroVelocity();
         ball.body.collideWorldBounds = true;
-        ball.body.bounce.setTo(0.8,0.8); // object's elasticity
+        ball.body.setZeroDamping();
+        ball.body.fixedRotation = true;
 
 
         //init arrow
@@ -111,8 +109,8 @@ Play.prototype = {
         scoreInfo.scale.setTo(scale * 7);
         turn = this.game.add.text(this.game.world.width/2, 600 * objectRatio, "", {
             font: "30px Arial",
-            fill: "#ff0044"
-            
+            fill: "#ff0044",
+            align: "center"
         });
     },
 
@@ -124,7 +122,8 @@ Play.prototype = {
         }
     },
     shoot: function(){
-        this.game.physics.arcade.velocityFromAngle(ball.angle, strength, ball.body.velocity);
+        // this.game.physics.arcade.velocityFromAngle(ball.angle, strength, ball.body.velocity);
+        ball.body.thrust(10000);
         strength = 0;
         newScaleX = scale;
         arrow.scale.setTo(scale, scale * 1.5);
@@ -173,12 +172,25 @@ Play.prototype = {
         else turn.setText("Ball belongs to team 2");
     },
 
+    stopObjects: function(){
+        players2.forEach(function(item) {
+            if(getSpeed(item) < 50){
+                item.body.setZeroVelocity();
+            }
+        }, this);
+        players1.forEach(function(item) {
+            if(getSpeed(item) < 50){
+                item.body.setZeroVelocity();
+            }
+        }, this);
+        if(getSpeed(ball) < 50){
+            ball.body.setZeroVelocity();
+        }
+    },
+
     update: function () {
         //check collision
-        this.game.physics.arcade.collide(ball, players1);
-        this.game.physics.arcade.collide(ball, players2); 
-        this.game.physics.arcade.collide(ball, borders);
-
+        this.stopObjects();
         if(this.game.physics.arcade.overlap(ball, goals.getAt(0),this.goal1) == true){
             if(setReset == false){ // set the timer
                 elapsedTime = this.game.time.now;
@@ -208,34 +220,42 @@ Play.prototype = {
         arrow.x = ball.x;
         arrow.y = ball.y;
         arrow.angle = ball.angle;
-
         //input
-        if(!setReset){
-            if(ball.body.speed == 0){
-                this.chooseBall();
-                arrow.visible = true;
-                if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) this.prepare();  
-                else{// if user intentionally wants to shoot
-                    if(strength > 0 ) this.shoot();
-                }
-                if (input.left.isDown){
-                    ball.body.angularVelocity = -150;
-                }
-                else if (input.right.isDown){
-                    ball.body.angularVelocity = 150;
-                }else{
-                    ball.body.angularVelocity = 0;
-                }
-            }else{
-                arrow.visible = false;
-            }
-        }
+        // if(!setReset){
+        //     if(getSpeed(ball) < 5){
+        //         this.chooseBall();
+        //         arrow.visible = true;
+        //         if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) this.prepare();  
+        //         else{// if user intentionally wants to shoot
+        //             if(strength > 0 ) this.shoot();
+        //         }
+        //         if (input.left.isDown){
+        //             ball.body.angularVelocity = -150;
+        //         }
+        //         else if (input.right.isDown){
+        //             ball.body.angularVelocity = 150;
+        //         }else{
+        //             ball.body.angularVelocity = 0;
+        //         }
+        //     }else{
+        //         arrow.visible = false;
+        //     }
+        // }
+        this.debugCollision();
 
     },
 
     render: function(){
         // this.game.debug.spriteInfo(ball, 32, 32);
     },
+
+    debugCollision: function(){
+        if (input.left.isDown) {ball.body.moveLeft(500);}   //ball movement
+        else if (input.right.isDown){ball.body.moveRight(500);}
+        else {ball.body.setZeroRotation();}
+        if (input.up.isDown){ball.body.moveUp(500);}
+        else if (input.down.isDown){ball.body.moveDown(500);}
+    }
 
 
 }
