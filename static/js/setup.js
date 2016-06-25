@@ -1,56 +1,59 @@
 /* This file contains helper methods and settings for play.js */
 
 //setup border field
-function setBorderPosition(border, goal, game, upperSpace ){
+function setBorderPosition(border, goal, game, upperSpace, gameWidth ){
 	//here are some hardcoded constants
-	marginX = 28 * objectRatio;
-	marginY = 85 * objectRatio; // used to be 40
+	marginX = 38 * objectRatio;
+	marginY = 120 * objectRatio; // used to be 40, then 85
 	innerWidth = 885 * objectRatio;
 	innerHeight = 420 * objectRatio;
 	goalLength = 98 * objectRatio;
+	goalWidth = 18 * objectRatio;
 	offsetToGoal = 200 * objectRatio; // the height from top of the field to the goal
+	OFFSETFROMSCREEN = 50 * objectRatio; // the screen does not appear to show the top 50 pixels
 
-	game.physics.p2.setBounds(marginX,marginY,innerWidth, innerHeight);
+	game.physics.p2.setBounds(marginX - goalWidth,marginY - 35 * objectRatio, gameWidth, innerHeight);
 
 	// 6 borders
-	// var leftTopBlank = game.add.sprite(0, marginY + upperSpace, 'blank');
-	// leftTopBlank.height = (innerHeight - goalLength)/2;
-	// leftTopBlank.x = marginX - leftTopBlank.width * objectRatio ;
+	var leftTopBlank = game.add.sprite(0, marginY + upperSpace, 'blank');
+	leftTopBlank.height = (innerHeight - goalLength)/2;
+	leftTopBlank.x = marginX - leftTopBlank.width * objectRatio ;
 
-	// var leftBottomBlank = game.add.sprite(0,marginY + upperSpace + leftTopBlank.height + goalLength, 'blank');
-	// leftBottomBlank.height =(innerHeight - goalLength)/2;
-	// leftBottomBlank.x = marginX - leftBottomBlank.width * objectRatio;
+	var leftBottomBlank = game.add.sprite(0,marginY + upperSpace + leftTopBlank.height + goalLength, 'blank');
+	leftBottomBlank.height =(innerHeight - goalLength)/2;
+	leftBottomBlank.x = marginX - leftBottomBlank.width * objectRatio;
 
-	// var topBlank = game.add.sprite(marginX, marginY + upperSpace,'blank');
-	// topBlank.y -= topBlank.height;
-	// topBlank.width = innerWidth;
+	var rightTopBlank = game.add.sprite(innerWidth + marginX,marginY + upperSpace,'blank');
+	rightTopBlank.height = (innerHeight - goalLength)/2;
 
-	// var rightTopBlank = game.add.sprite(innerWidth + marginX,marginY + upperSpace,'blank');
-	// rightTopBlank.height = (innerHeight - goalLength)/2;
+	var rightBottomBlank = game.add.sprite(innerWidth + marginX, marginY + upperSpace + leftTopBlank.height + goalLength, 'blank');
+	rightBottomBlank.height = (innerHeight - goalLength) /2;
 
-	// var rightBottomBlank = game.add.sprite(innerWidth + marginX, marginY + upperSpace + leftTopBlank.height + goalLength, 'blank');
-	// rightBottomBlank.height = (innerHeight - goalLength) /2;
+	border.add(leftTopBlank);
+	border.add(rightTopBlank);
+	border.add(leftBottomBlank);
+	border.add(rightBottomBlank);
+	// enhance the width of border in case ball gets out
+	border.forEach(function(item){
+		item.width  = 30 * objectRatio;
+	}, this);
 
-	// var bottomBlank = game.add.sprite(marginX,innerHeight +marginY+ upperSpace,'blank');
-	// bottomBlank.width = innerWidth;
 
-	// border.add(leftTopBlank);
-	// border.add(rightTopBlank);
-	// border.add(leftBottomBlank);
-	// border.add(rightBottomBlank);
-	// border.add(topBlank);
-	// border.add(bottomBlank);
 
 	//Goal
-	// var leftGoal = game.add.sprite(0, marginY + upperSpace, 'goal');
-	// leftGoal.x = marginX - leftGoal.width * objectRatio;
-	// leftGoal.y += offsetToGoal;
-	// leftGoal.height = goalLength;
-	// var rightGoal = game.add.sprite(innerWidth + marginX, marginY + upperSpace, 'goal');
-	// rightGoal.y += offsetToGoal; 
-	// rightGoal.height = goalLength;
-	// goal.add(leftGoal);
-	// goal.add(rightGoal);
+
+	var leftGoal = game.add.sprite(0, OFFSETFROMSCREEN + upperSpace, 'goal');
+	leftGoal.x = marginX - leftGoal.width * objectRatio;
+	leftGoal.y += offsetToGoal;
+	leftGoal.height = goalLength;
+	var rightGoal = game.add.sprite(innerWidth + marginX, OFFSETFROMSCREEN + upperSpace, 'goal');
+	rightGoal.y += offsetToGoal; 
+	rightGoal.height = goalLength;
+	goal.add(leftGoal);
+	goal.add(rightGoal);
+	goal.forEach(function(item){
+		item.width  = 30 * objectRatio;
+	}, this);
 
 }
 
@@ -76,7 +79,7 @@ function setPlayerPositions(players1, players2, upperSpace){
 		item.y = item.y + upperSpace;
 	}, this);
 
-	players2.create(900*objectRatio, 250*objectRatio, 'player2');
+	players2.create(850*objectRatio, 250*objectRatio, 'player2');
 	defX = 700;
 	players2.create(defX*objectRatio, 250*objectRatio, 'player2');
 

@@ -16,7 +16,7 @@ var Play = function(game){
     var turn;
 
 }
-
+var DEBUG = false;
 var reset = true;
 var setReset = false; // false before timer has been set
 
@@ -43,11 +43,12 @@ Play.prototype = {
         //enable physics
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.game.physics.p2.restitution = 0.8;
+
         // border field for collision
         borders = this.game.add.group();
         goals = this.game.add.group();
 
-        setBorderPosition(borders,goals, this.game, this.game.global.upperSpace);
+        setBorderPosition(borders,goals, this.game, this.game.global.upperSpace, this.game.global.gameWidth);
         this.game.physics.p2.enable(borders);
         this.game.physics.p2.enable(goals);
         borders.forEach(function(item) {
@@ -66,16 +67,16 @@ Play.prototype = {
         this.game.physics.p2.enable(players1);
         this.game.physics.p2.enable(players2);
         players1.forEach(function(item) {
-            item.body.setZeroDamping();
+            item.body.damping = 0.9;
             item.body.fixedRotation = true;
             item.body.setZeroVelocity();
-            item.body.setCircle(item.width/2);
+            item.body.setCircle((item.width - 2 * objectRatio)/2);
         }, this);
         players2.forEach(function(item) {
-            item.body.setZeroDamping();
+            item.body.damping = 0.9;
             item.body.fixedRotation = true;
             item.body.setZeroVelocity();
-            item.body.setCircle(item.width/2);
+            item.body.setCircle((item.width - 2 * objectRatio)/2);
         }, this);
 
         //init ball
@@ -86,18 +87,19 @@ Play.prototype = {
         this.game.physics.p2.enable(ball);
         ball.body.setZeroVelocity();
         ball.body.collideWorldBounds = true;
-        ball.body.setZeroDamping();
-        ball.body.fixedRotation = true;
+        // ball.body.setZeroDamping();
+        console.log("damping is " + ball.body.damping);
+        ball.body.damping = 0.9;
 
 
         //init arrow
         arrow = this.game.world.create(objectRatio * 400, objectRatio * 400, 'arrow');
-        arrow.anchor.setTo(0.2, 0.5);
-        arrow.scale.setTo(scale * 0.5, scale * 1.5);
+        arrow.anchor.setTo(0.5, 0.5);
+        arrow.scale.setTo(scale * 5.5, scale * 3.5);
         newScaleX = scale; 
         input = this.game.input.keyboard.createCursorKeys();
         //this makes the game excluded from input of the browser
-        this.game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
+        this.game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR]);
 
         //all kinds of scoreInfo
         scoreInfo = this.game.add.text(this.game.world.width /2,  40 * objectRatio  ,score1 +  " : " + score2, {
@@ -117,13 +119,13 @@ Play.prototype = {
     prepare: function(){
         if(strength <= 1000){
             strength = strength + 20;
-            newScaleX = newScaleX *1.01;
+            newScaleX = newScaleX *1.04;
             arrow.scale.setTo(newScaleX, scale * 1.5);
         }
     },
     shoot: function(){
-        // this.game.physics.arcade.velocityFromAngle(ball.angle, strength, ball.body.velocity);
-        ball.body.thrust(10000);
+        ball.body.thrust(50000);
+        ball.body.setZeroRotation();
         strength = 0;
         newScaleX = scale;
         arrow.scale.setTo(scale, scale * 1.5);
@@ -172,39 +174,12 @@ Play.prototype = {
         else turn.setText("Ball belongs to team 2");
     },
 
-    stopObjects: function(){
-        players2.forEach(function(item) {
-            if(getSpeed(item) < 50){
-                item.body.setZeroVelocity();
-            }
-        }, this);
-        players1.forEach(function(item) {
-            if(getSpeed(item) < 50){
-                item.body.setZeroVelocity();
-            }
-        }, this);
-        if(getSpeed(ball) < 50){
-            ball.body.setZeroVelocity();
-        }
-    },
+
 
     update: function () {
         //check collision
-        this.stopObjects();
-        if(this.game.physics.arcade.overlap(ball, goals.getAt(0),this.goal1) == true){
-            if(setReset == false){ // set the timer
-                elapsedTime = this.game.time.now;
-                setReset = true;
-                arrow.visible = false;
-            }
-        };
-        if(this.game.physics.arcade.overlap(ball, goals.getAt(1),this.goal2) == true){
-            if(setReset == false){ // set the timer
-                elapsedTime = this.game.time.now;
-                setReset = true;
-                arrow.visible = false;
-            }
-        };
+
+
 
         //reset the field after goal
         if(setReset){
@@ -213,35 +188,39 @@ Play.prototype = {
                 setReset = false;
                 arrow.visible = true;
                 this.resetGoal();
-
             }
         }
         
         arrow.x = ball.x;
         arrow.y = ball.y;
-        arrow.angle = ball.angle;
-        //input
-        // if(!setReset){
-        //     if(getSpeed(ball) < 5){
-        //         this.chooseBall();
-        //         arrow.visible = true;
-        //         if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) this.prepare();  
-        //         else{// if user intentionally wants to shoot
-        //             if(strength > 0 ) this.shoot();
-        //         }
-        //         if (input.left.isDown){
-        //             ball.body.angularVelocity = -150;
-        //         }
-        //         else if (input.right.isDown){
-        //             ball.body.angularVelocity = 150;
-        //         }else{
-        //             ball.body.angularVelocity = 0;
-        //         }
-        //     }else{
-        //         arrow.visible = false;
-        //     }
-        // }
-        this.debugCollision();
+        arrow.rotation = ball.body.rotation;
+        // input
+        if(!setReset){
+            if(getSpeed(ball) < 5){
+                this.chooseBall();
+                arrow.visible = true;
+                if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) this.prepare();  
+                else{// if user intentionally wants to shoot
+                    if(strength > 0 ) this.shoot();
+                }
+                if (input.left.isDown){
+                    ball.body.rotateLeft(100);
+                }
+                else if (input.right.isDown){
+                    ball.body.rotateRight(100);
+                }
+                else{
+                    ball.body.setZeroRotation();
+                }
+            }else{
+                arrow.visible = false;
+                ball.body.setZeroRotation();
+            }
+        }
+        if(DEBUG){ 
+            // ball.body.setZeroVelocity();
+            this.debugCollision();
+        }
 
     },
 
@@ -256,6 +235,5 @@ Play.prototype = {
         if (input.up.isDown){ball.body.moveUp(500);}
         else if (input.down.isDown){ball.body.moveDown(500);}
     }
-
 
 }

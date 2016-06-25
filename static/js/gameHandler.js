@@ -27,6 +27,7 @@ window.onload = function() {
     // global variables stored here
     game.global = {
         // for scaling every objects in the game
+        gameWidth: windowWidth,
         ratio:  (windowWidth)/ (windowHeight * (500 / DESIRED_HEIGHT)), // field width / field height
         objectRatio : widthRatio, // this is the ratio in which objects have to be scaled according to the field
         upperSpace: 50 * widthRatio // space of the score
