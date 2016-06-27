@@ -102,3 +102,5 @@ function setPlayerPositions(players1, players2, upperSpace){
 function getSpeed(item){
 	return Math.sqrt(item.body.velocity.x * item.body.velocity.x + item.body.velocity.y * item.body.velocity.y);
 }
+
+

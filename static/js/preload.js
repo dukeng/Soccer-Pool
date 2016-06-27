@@ -13,6 +13,8 @@ Preload.prototype = {
         this.game.load.image('arrow', 'static/images/arrow.png');
         this.game.load.image('blank', 'static/images/blank.png');
         this.game.load.image('goal', 'static/images/blank.png');
+        this.game.load.image('star', 'static/images/star.png');
+        this.game.load.image('circle', 'static/images/aim_circle.png');
 	},
 	create: function(){
 		this.game.state.start("Play");
