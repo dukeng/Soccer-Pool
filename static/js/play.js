@@ -1,5 +1,4 @@
 var Play = function(game){
-	console.log("Currently at play");
     var players1;
     var players2;
     //shortcuts for the constant 
@@ -13,9 +12,12 @@ var Play = function(game){
     var desinatedPlayer;
 
 }
+var MINIMUM_VELOCITY = 40; // minimum velocity before sprites stop
 
 var reset = true;
 var setReset = false; // false before timer has been set
+
+var notMoving = true; 
 
 var strength  = 0; //strength of the shoot
 var newScaleX = 0;
@@ -51,13 +53,13 @@ Play.prototype = {
 
         setBorderPosition(borders,goals, this.game, this.game.global.upperSpace, this.game.global.gameWidth);
         this.game.physics.p2.enable(borders);
-        this.game.physics.p2.enable(goals);
+        // this.game.physics.p2.enable(goals);
         borders.forEach(function(item) {
             item.body.static = true;
         }, this);
-        goals.forEach(function(item) {
-            item.body.static = true;
-        }, this);
+        // goals.forEach(function(item) {
+        //     item.body.static = true;
+        // }, this);
 
         //Players
         players1 = this.game.add.group(); 
@@ -68,16 +70,16 @@ Play.prototype = {
         this.game.physics.p2.enable(players1);
         this.game.physics.p2.enable(players2);
         players1.forEach(function(item) {
-            item.body.damping = 0.9;
+            item.body.damping = 0.8;
             item.body.fixedRotation = true;
             item.body.setZeroVelocity();
-            item.body.setCircle((item.width - 2 * objectRatio)/2);
+            item.body.setCircle((item.width )/2);
         }, this);
         players2.forEach(function(item) {
-            item.body.damping = 0.9;
+            item.body.damping = 0.8;
             item.body.fixedRotation = true;
             item.body.setZeroVelocity();
-            item.body.setCircle((item.width - 2 * objectRatio)/2);
+            item.body.setCircle((item.width )/2);
         }, this);
 
         //initialize ball
@@ -88,14 +90,13 @@ Play.prototype = {
         this.game.physics.p2.enable(ball);
         ball.body.setZeroVelocity();
         ball.body.collideWorldBounds = true;
-        // ball.body.setZeroDamping();
         console.log("damping is " + ball.body.damping);
-        ball.body.damping = 0.99;
-        // console.log(ball);
+        ball.body.damping = 0.9;
         //init arrow
         arrow = this.game.world.create(objectRatio * 400, objectRatio * 400, 'arrow');
         arrow.anchor.setTo(0.5, 0.7);
         arrow.scale.setTo(scale * 5.5, scale * 3.5);
+        arrow.visible = false;
         newScaleX = scale; 
         
         //init star
@@ -122,8 +123,6 @@ Play.prototype = {
             align: "center"
         });
         teamTurn = 1;
-        if(teamTurn == 1) turnInfo.setText("Team 1's turn");
-        else turnInfo.setText("Team 2's turn");
         turnInfo.scale.setTo(scale * 7);
         //---initialize debug tools---//
         DEBUG_TEXT = this.game.add.text(this.game.world.width/2 - 300 * objectRatio, 600 * objectRatio, "", {
@@ -143,7 +142,7 @@ Play.prototype = {
     choosePlayer: function(pointer){ // ball belongs to whom, pointer is the mouse click position
         var checkWithBodies;
         // set team bodies to check with
-        if(teamTurn === 1) checkWithBodies = players1.children;
+        if(teamTurn == 1) checkWithBodies = players1.children;
         else checkWithBodies = players2.children;
         // bodies contain array of bodies that overlap the point
         var bodies = this.game.physics.p2.hitTest(pointer.position, checkWithBodies);
@@ -152,17 +151,16 @@ Play.prototype = {
         } else{
             if(bodies.length !==1) DEBUG_TEXT.setText("Warning: overlap occurred");
             else{
-                // console.log(bodies[0].parent.sprite.position);
                 star.position = bodies[0].parent.sprite.position;
                 star.visible = true;
                 this.desinatedPlayer = bodies[0].parent;
-                console.log(this.desinatedPlayer);
+                DEBUG_TEXT.setText("");
             }
         }
     },
 
     prepare: function(){
-        if(this.desinatedPlayer !== undefined){
+        if(this.desinatedPlayer !== undefined && notMoving){
             touchAt = this.game.input.activePointer.position;
             arrow.x = this.desinatedPlayer.x;
             arrow.y = this.desinatedPlayer.y;
@@ -170,9 +168,9 @@ Play.prototype = {
             circle.y = this.desinatedPlayer.y;
             arrow.rotation = - Phaser.Math.angleBetweenPointsY(this.desinatedPlayer.sprite.position,touchAt);
             this.desinatedPlayer.rotation =  - Phaser.Math.angleBetweenPointsY(this.desinatedPlayer.sprite.position,touchAt);
-            distance = Phaser.Point.distance(this.desinatedPlayer.sprite.position,touchAt);
-            if(distance <= 400){  // set the property of strength, circle and arrow
-                strength = distance *550;
+            distance = Phaser.Point.distance(this.desinatedPlayer.sprite.position,touchAt) * objectRatio;
+            if(distance <= 100 * objectRatio && distance > this.desinatedPlayer.sprite.width / 2 ){  // set the property of strength, circle and arrow
+                strength = distance *1200;
                 arrowRatio = arrow.width / arrow.height;
                 arrow.height = distance * 2;
                 arrow.width = arrowRatio * arrow.height;
@@ -180,17 +178,25 @@ Play.prototype = {
                 circle.height = distance * 2;
                 circle.visible = true;
                 arrow.visible = true;
-
-            }  
+            } else if (distance <= this.desinatedPlayer.sprite.width / 2){
+                circle.visible = false;
+                arrow.visible = false;
+                strength = 0;
+            }
         }
     },
     shoot: function(){
         if(strength !== 0){
             this.desinatedPlayer.thrust(strength);
             this.desinatedPlayer.setZeroRotation();
+            this.desinatedPlayer = undefined;
             strength = 0;
             arrow.visible = false; 
             circle.visible = false;
+            star.visible = false;
+            notMoving = false;
+            if(teamTurn == 1 ) teamTurn = 0;
+            else teamTurn = 1;
         }
     },
 
@@ -198,7 +204,9 @@ Play.prototype = {
         if(reset){
             score2++;
             reset = false;
+            setReset = true;
             scoreInfo.setText(score1 + " : " + score2);
+            DEBUG_TEXT.setText("GOAL!!!");
         }
     },
 
@@ -206,31 +214,38 @@ Play.prototype = {
         if(reset){
             score1++;
             reset = false;
+            setReset = true;
             scoreInfo.setText(score1 + " : " + score2);
+            DEBUG_TEXT.setText("GOAL!!!");
         }
     },
 
     resetGoal: function(){
-        ball.x = 475 * objectRatio;
-        ball.y = 250 * objectRatio + this.game.global.upperSpace;
-        ball.body.velocity.setTo(0);
+        ball.body.x = 475 * objectRatio;
+        ball.body.y = 250 * objectRatio + this.game.global.upperSpace;
+        setReset = false;
+        reset = true;
     },
 
     update: function () {
-        //check collision
+        if(teamTurn == 1) turnInfo.setText("Team 1's turn");
+        else turnInfo.setText("Team 2's turn");
+        //check if goal
+        if(goals.children[0].overlap(ball)) this.goal1();
+        else if(goals.children[1].overlap(ball)) this.goal2();
 
         //reset the field after ball goes into goal
-        if(setReset){
-            if((this.game.time.now - elapsedTime) > 3800){ // check the timer
-                reset = true;
-                setReset = false;
+        if(setReset){ // just goal
+            if(notMoving){ // everything stops
                 this.resetGoal();
-            }
+            } 
+
         }
-        if(this.desinatedPlayer != undefined){
-            // DEBUG_TEXT.setText("player is not null");
+        if(!notMoving){
+            var movableObjects = {players1, players2, ball};
+            forceToStop(movableObjects, forceStop);
+            if(isFieldStable(movableObjects, isNotMoving)) notMoving = true;
         }
-        
         // input
         if(!setReset){ // if not resetting
             if(getSpeed(ball) < 1){
@@ -244,7 +259,6 @@ Play.prototype = {
             }
         }
         if(DEBUG){ 
-            this.debugCollision();
         }
 
     },
