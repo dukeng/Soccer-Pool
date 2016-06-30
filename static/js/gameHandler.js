@@ -1,5 +1,5 @@
-    var windowWidth = window.innerWidth,
-        windowHeight = window.innerHeight;
+var windowWidth = window.innerWidth,
+    windowHeight = window.innerHeight;
 window.onload = function() {
     //Screen adjustment
     const DESIRED_WIDTH=950;
@@ -37,9 +37,8 @@ window.onload = function() {
     //Game states
     game.state.add('Boot', Boot);
     // game.state.scale.refresh();
-    console.log("got here");
     game.state.add('Preload',Preload);
-    //game.state.add(Menu, menu);
+    game.state.add('Menu', Menu);
     game.state.add('Play', Play);
     //Start the game
     game.state.start("Boot");
