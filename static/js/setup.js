@@ -3,9 +3,9 @@
 //setup border field
 function setBorderPosition(border, goal, game, upperSpace, gameWidth ){
 	//here are some hardcoded constants
-	marginX = 30 * objectRatio;
+	marginX = 55 * objectRatio;
 	marginY = 40 * objectRatio; //  +35
-	innerWidth = 885 * objectRatio;
+	innerWidth = 835 * objectRatio;
 	innerHeight = 420 * objectRatio;
 	goalLength = 98 * objectRatio;
 	goalWidth = 18 * objectRatio;
@@ -48,10 +48,7 @@ function setBorderPosition(border, goal, game, upperSpace, gameWidth ){
 		item.width  = 30 * objectRatio;
 	}, this);
 
-
-
 	//Goal
-
 	var leftGoal = game.add.sprite(0, OFFSETFROMSCREEN + upperSpace, 'goal');
 	leftGoal.width = 20 * objectRatio;
 	leftGoal.x = marginX - leftGoal.width - 10 * objectRatio; // hardcode the margin to push the goal back a little bit
@@ -66,10 +63,7 @@ function setBorderPosition(border, goal, game, upperSpace, gameWidth ){
 	rightGoal.width = 20 * objectRatio;
 	rightGoal.x += 10 * objectRatio 
 	rightGoal.y -= rightGoal.height /2;
-	
 	goal.add(rightGoal);
-
-
 }
 
 // setup for team's position
@@ -82,12 +76,6 @@ function setPlayerPositions(players1, players2, upperSpace){
 	middlefieldX = 400;
 	players1.create(middlefieldX*objectRatio, 150*objectRatio, 'player1');
 	players1.create(middlefieldX*objectRatio, 350*objectRatio, 'player1');
-	middField2X = 550;
-	// players1.create(middField2X*objectRatio, 170*objectRatio, 'player1');
-	// players1.create(middField2X*objectRatio, 330*objectRatio, 'player1');
-	// attackX = 700; 
-	// players1.create(attackX*objectRatio, 175*objectRatio, 'player1');
-	// players1.create(attackX*objectRatio, 325*objectRatio, 'player1');
 	players1.forEach(function(item) {
 		item.scale.setTo(scale);
 		item.anchor.setTo(0.5,0.5);
@@ -102,11 +90,7 @@ function setPlayerPositions(players1, players2, upperSpace){
 	players2.create(midX*objectRatio, 150*objectRatio, 'player2');
 	players2.create(midX*objectRatio, 250*objectRatio, 'player2');
 	players2.create(midX*objectRatio, 350*objectRatio, 'player2');
-	attX = 300;
-	// players2.create(attX*objectRatio, 100*objectRatio, 'player2');
-	// players2.create(attX*objectRatio, 200*objectRatio, 'player2');
-	// players2.create(attX*objectRatio, 300*objectRatio, 'player2');
-	// players2.create(attX*objectRatio, 400*objectRatio, 'player2');
+
 	players2.forEach(function(item) {
 		item.scale.setTo(scale);
 		item.anchor.setTo(0.5,0.5);
@@ -114,43 +98,15 @@ function setPlayerPositions(players1, players2, upperSpace){
 	}, this);
 }
 
-function getSpeed(item){
-	return Math.sqrt(item.body.velocity.x * item.body.velocity.x + item.body.velocity.y * item.body.velocity.y);
-}
 
-function isNotMoving(){ // check if every object in one group/ object has stopped moving
-	var stop = true;
-	if(this.children.length === 0){ // if the thing passed in is an object
-		if(getSpeed(this) > MINIMUM_VELOCITY) stop = false;
-	} else if (stop){				// if the thing passed in is a group
-		this.forEach(function(item){
-		if(getSpeed(item) > MINIMUM_VELOCITY){
-			stop = false;
-		}
-	}, this);
-	}
-	return stop;
-}
+// function goal(){
+// 	goal_message_tween.to( {x:game.world.centerX}, 2000, Phaser.Easing.Bounce.Out, true);
+// 	goal_message_tween.onComplete.add(escape, this);
+// 	console.log("hello");
+// 	function escape(){
+// 		console.log(goal_message_tween);
+// 	goal_message_tween.to({y : game.world.centerY}, 2000, Phaser.Easing.Bounce.Out, false);
+// 	}
+// }
 
-function isFieldStable(set, isNotMoving){
-	for (var item in set ){ // set is an object containing groups/ object to check with
-		if(!isNotMoving.call(set[item])) return false; // pass in each group in set
-	}
-	return true;
-}
 
-function forceToStop(set, forceStop){
-	for (var item in set ){ // set is an object containing groups/ objecdt to check with
-		forceStop.call(set[item]);
-	}
-}
-
-function forceStop(){
-	if(this.children.length === 0){ // if the thing passed in is an object
-		if(getSpeed(this) <= MINIMUM_VELOCITY) this.body.setZeroVelocity();
-	} else {				// if the thing passed in is a group
-		this.forEach(function(item){
-		if(getSpeed(item) <= MINIMUM_VELOCITY) item.body.setZeroVelocity();
-	}, this);
-	}
-}

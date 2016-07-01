@@ -16,7 +16,9 @@ Preload.prototype = {
         this.game.load.image('star', 'static/images/star.png');
         this.game.load.image('circle', 'static/images/aim_circle.png');
         this.game.load.image('background', 'static/images/background.png');
+        this.game.load.image('goal_message', 'static/images/goal_message.png');
         this.game.load.spritesheet('play', 'static/images/ui/play.png', 217, 102);
+
 	},
 	create: function(){
 		this.game.state.start("Menu");

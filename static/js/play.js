@@ -10,9 +10,8 @@ var Play = function(game){
     var borders; //borders position
     var goals; // goal positions
     var desinatedPlayer;
-
 }
-var MINIMUM_VELOCITY = 40; // minimum velocity before sprites stop
+var MINIMUM_VELOCITY = 20; // minimum velocity before sprites stop
 
 var reset = true;
 var setReset = false; // false before timer has been set
@@ -40,7 +39,7 @@ Play.prototype = {
         field.x = this.game.world.width /2;
         field.y = this.game.world.height * (500/700)/2 + this.game.global.upperSpace; 
         field.anchor.setTo(0.5,0.5); // set the middle of the field
-        field.width = this.game.world.width;
+        field.width = this.game.world.width - 50 * objectRatio;
         field.height = field.width / fieldRatio;
 
         //enable physics
@@ -53,13 +52,9 @@ Play.prototype = {
 
         setBorderPosition(borders,goals, this.game, this.game.global.upperSpace, this.game.global.gameWidth);
         this.game.physics.p2.enable(borders);
-        // this.game.physics.p2.enable(goals);
         borders.forEach(function(item) {
             item.body.static = true;
         }, this);
-        // goals.forEach(function(item) {
-        //     item.body.static = true;
-        // }, this);
 
         //Players
         players1 = this.game.add.group(); 
@@ -80,8 +75,7 @@ Play.prototype = {
             item.body.fixedRotation = true;
             item.body.setZeroVelocity();
             item.body.setCircle((item.width )/2);
-        }, this);
-
+        }, this);    
         //initialize ball
         ball = this.game.world.create(objectRatio * 475 , objectRatio * 250 + this.game.global.upperSpace, 'ball');
         ball.scale.setTo(scale * 0.8);
@@ -91,10 +85,10 @@ Play.prototype = {
         ball.body.setZeroVelocity();
         ball.body.collideWorldBounds = true;
         console.log("damping is " + ball.body.damping);
-        ball.body.damping = 0.9;
+        ball.body.damping = 0.8;
         //init arrow
         arrow = this.game.world.create(objectRatio * 400, objectRatio * 400, 'arrow');
-        arrow.anchor.setTo(0.5, 0.7);
+        arrow.anchor.setTo(0.5, 0.65);
         arrow.scale.setTo(scale * 5.5, scale * 3.5);
         arrow.visible = false;
         newScaleX = scale; 
@@ -125,7 +119,7 @@ Play.prototype = {
         teamTurn = 1;
         turnInfo.scale.setTo(scale * 7);
         //---initialize debug tools---//
-        DEBUG_TEXT = this.game.add.text(this.game.world.width/2 - 300 * objectRatio, 600 * objectRatio, "", {
+        DEBUG_TEXT = this.game.add.text(this.game.world.width/2 - 400 * objectRatio, 600 * objectRatio, "", {
             font: "30px Arial",
             fill: "#ff0044",
             align: "center"
@@ -137,6 +131,9 @@ Play.prototype = {
         input = this.game.input.keyboard.createCursorKeys();
         //whenever user clicks the game will set the player to hit the ball
         this.game.input.onDown.add(this.choosePlayer, this);
+
+
+
     },
 
     choosePlayer: function(pointer){ // ball belongs to whom, pointer is the mouse click position
@@ -169,8 +166,8 @@ Play.prototype = {
             arrow.rotation = - Phaser.Math.angleBetweenPointsY(this.desinatedPlayer.sprite.position,touchAt);
             this.desinatedPlayer.rotation =  - Phaser.Math.angleBetweenPointsY(this.desinatedPlayer.sprite.position,touchAt);
             distance = Phaser.Point.distance(this.desinatedPlayer.sprite.position,touchAt) * objectRatio;
-            if(distance <= 100 * objectRatio && distance > this.desinatedPlayer.sprite.width / 2 ){  // set the property of strength, circle and arrow
-                strength = distance *1200;
+            if(distance <= 50 * objectRatio && distance > this.desinatedPlayer.sprite.width / 2 ){  // set the property of strength, circle and arrow
+                strength = distance *1500;
                 arrowRatio = arrow.width / arrow.height;
                 arrow.height = distance * 2;
                 arrow.width = arrowRatio * arrow.height;
@@ -197,6 +194,7 @@ Play.prototype = {
             notMoving = false;
             if(teamTurn == 1 ) teamTurn = 0;
             else teamTurn = 1;
+
         }
     },
 
@@ -206,7 +204,7 @@ Play.prototype = {
             reset = false;
             setReset = true;
             scoreInfo.setText(score1 + " : " + score2);
-            DEBUG_TEXT.setText("GOAL!!!");
+            tweenGoal(this.game);
         }
     },
 
@@ -216,7 +214,7 @@ Play.prototype = {
             reset = false;
             setReset = true;
             scoreInfo.setText(score1 + " : " + score2);
-            DEBUG_TEXT.setText("GOAL!!!");
+            tweenGoal(this.game);
         }
     },
 

@@ -20,7 +20,7 @@ window.onload = function() {
     var widthRatio = windowWidth/ DESIRED_WIDTH, heightRatio = windowHeight / DESIRED_HEIGHT; // really important value
     
     var game = new Phaser.Game(windowWidth, windowHeight, Phaser.AUTO, '', "game");
-    // console.log("width of window is: " + window.innerWidth + "window height is: " + window.innerHeight +  "device pixel ratio is: " + devicePixelRatio);
+    
     console.log("Width of world is: " + windowWidth + " Height of world is: " + windowHeight );
     console.log("Width Ratio is: " + widthRatio +"Height Ratio is: " + heightRatio);
 
