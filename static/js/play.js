@@ -84,7 +84,6 @@ Play.prototype = {
         this.game.physics.p2.enable(ball);
         ball.body.setZeroVelocity();
         ball.body.collideWorldBounds = true;
-        console.log("damping is " + ball.body.damping);
         ball.body.damping = 0.8;
         //init arrow
         arrow = this.game.world.create(objectRatio * 400, objectRatio * 400, 'arrow');
@@ -221,6 +220,7 @@ Play.prototype = {
     resetGoal: function(){
         ball.body.x = 475 * objectRatio;
         ball.body.y = 250 * objectRatio + this.game.global.upperSpace;
+        ball.body.setZeroRotation();
         setReset = false;
         reset = true;
     },
@@ -232,13 +232,7 @@ Play.prototype = {
         if(goals.children[0].overlap(ball)) this.goal1();
         else if(goals.children[1].overlap(ball)) this.goal2();
 
-        //reset the field after ball goes into goal
-        if(setReset){ // just goal
-            if(notMoving){ // everything stops
-                this.resetGoal();
-            } 
 
-        }
         if(!notMoving){
             var movableObjects = {players1, players2, ball};
             forceToStop(movableObjects, forceStop);
@@ -255,6 +249,10 @@ Play.prototype = {
                 star.visible = false;
                 ball.body.setZeroRotation();
             }
+        } else{//reset the field after ball goes into goal
+            if(notMoving){ // everything stops
+                this.resetGoal();
+            } 
         }
         if(DEBUG){ 
         }

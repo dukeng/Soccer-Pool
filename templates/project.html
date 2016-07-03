@@ -1,4 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
-<h2> Here are some of my projects</h2>
+<h2>Here are some of my projects</h2>
+<div class= "row">
+	<div class="col-lg-6">
+		<h3><a href="https://play.google.com/store/apps/details?id=com.happylittlevillage&hl=en">Happy Little Village</a></h3>
+		<img src="../static/happylittlevillage.jpeg" alt="Happy Little Village" style="width:552;height:313;">
+		<h4>An Android game application in which players manage their cities by performing rituals</h4>
+	</div>
+	<div class="col-lg-6">
+		<h3><a href="{{ url_for('soccerpool') }}">Soccer Pool</a></h3>
+		<img src="../static/soccerpool.png" alt="Happy Little Village" style="width:552;height:313;">
+		<h4>A soccer game with rules of pool</h4>
+	</div>
+</div>
+
 {% endblock %}

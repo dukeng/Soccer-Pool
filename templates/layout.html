@@ -1,22 +1,49 @@
 <!doctype html>
-<title>Duke Nguyen</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
 
-<div class=page>
-  <ul>
-  <li><a href="{{ url_for('index') }}">Home</a></li>
-  <li><a href="{{ url_for('project') }}">Projects</a></li>
-  <li><a href="{{ url_for('soccerpoll') }}">Soccer Poll</a></li>
-  <li><a href="{{ url_for('phaser') }}">Phaser</a></li>
-  </ul>
-  {% block body %}{% endblock %}
-</div>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Duke Nguyen</title>
+  <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/css/style.css" rel = "stylesheet">
+</head>
+<body>
+  <div class="site-wrapper">
 
-<footer>
-  <p>Duke Nguyen</p>
-  <p>Contact information:
- 	Email:<a href="https://gmail.com">nguyentranduc1@gmail.com</a>
-  Github:<a href="https://github.com/dukeng">Duke Ng</a>
-  Resume:<a href="https://github.com/dukeng">My resume</a>
-  </p>
-</footer>
+    <div class="site-wrapper-inner">
+
+      <div class="cover-container">
+
+        <div class="masthead clearfix">
+          <div class="inner">
+            <h3 class="masthead-brand">Duke Nguyen</h3>
+            <nav>
+              <ul class="nav masthead-nav">
+                <li role="presentation"><a href="{{ url_for('index') }}">Home</a></li>
+                <li role="presentation"><a href="{{ url_for('project') }}">Projects</a></li>
+                <li role="presentation"><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li role="presentation"><a href="{{ url_for('soccerpool') }}">Soccer Pool</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <div class="inner cover">
+          {% block body %}{% endblock %}
+        </div>
+
+        <div class="mastfoot">
+          <div class="inner">
+              <li>Email:<a href="https://gmail.com"> nguyentranduc1@gmail.com</a></li>
+              <li>Github:<a href="https://github.com/dukeng"> Duke Nguyen</a></li>
+              <li>Resume:<a href="https://github.com/dukeng">Resume</a></li>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+

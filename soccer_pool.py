@@ -17,12 +17,13 @@ def project():
 	print ("Try to access project page")
 	return render_template('project.html')
 
-@app.route('/soccerpoll')
-def soccerpoll():
-	print ("Try to access soccerpoll page")
-	return render_template('soccerpoll.html')
+@app.route('/contact')
+def contact():
+	print ("Try to access contact page")
+	return render_template('contact.html')
 
-@app.route('/phaser')
-def phaser():
-	print ("Try to access phaser page")
-	return render_template('phaser.html')
+@app.route('/soccerpool')
+def soccerpool():
+	print ("Try to access soccer pool page")
+	return render_template('soccerpool.html')
+

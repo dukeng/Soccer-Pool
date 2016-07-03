@@ -10,9 +10,8 @@ function setBorderPosition(border, goal, game, upperSpace, gameWidth ){
 	goalLength = 98 * objectRatio;
 	goalWidth = 18 * objectRatio;
 	offsetToGoal = 200 * objectRatio; // the height from top of the field to the goal
-	OFFSETFROMSCREEN = 50 * objectRatio; // the screen does not appear to show the top 50 pixels
 
-	game.physics.p2.setBounds(marginX - goalWidth ,marginY + upperSpace , gameWidth, innerHeight);
+	game.physics.p2.setBounds(marginX - goalWidth ,marginY + upperSpace , gameWidth - marginX + goalWidth, innerHeight);
 
 	// 6 borders
 	var leftTopBlank = game.add.sprite(0, upperSpace + marginY , 'blank');
@@ -48,6 +47,7 @@ function setBorderPosition(border, goal, game, upperSpace, gameWidth ){
 		item.width  = 30 * objectRatio;
 	}, this);
 
+	OFFSETFROMSCREEN = 50 * objectRatio; // the screen does not appear to show the top 50 pixels
 	//Goal
 	var leftGoal = game.add.sprite(0, OFFSETFROMSCREEN + upperSpace, 'goal');
 	leftGoal.width = 20 * objectRatio;
